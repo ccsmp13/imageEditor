@@ -35,15 +35,7 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
     //Color[][][] undoArr = new Color[0][0][0];
 
     public ImageEditorPanel() {
-
-        BufferedImage imageIn = null;
-        try {
-            imageIn = ImageIO.read(searchFile());
-        } catch (IOException e) {
-            System.out.println(e);
-            System.exit(1);
-        }
-        pixels = makeColorArray(imageIn);
+        uploadDialogue();
         globalHeight = pixels.length;
         globalWidth = pixels[0].length;
         boxStartX = globalWidth + HORI_OFFSET;
@@ -54,7 +46,16 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
         updateButtons();
         // undoStore(pixels);
     }
-
+    public void uploadDialogue(){
+        BufferedImage imageIn = null;
+        try {
+            imageIn = ImageIO.read(searchFile());
+        } catch (IOException e) {
+            System.out.println(e);
+            System.exit(1);
+        }
+        pixels = makeColorArray(imageIn);
+    }
     public void updateButtons() {
         rotateButton = new Rectangle(boxStartX, boxStartY, BOX_WIDTH, BOX_HEIGHT);
         horizontalFlipButton = new Rectangle(boxStartX, boxStartY * 3, BOX_WIDTH, BOX_HEIGHT);
@@ -382,14 +383,7 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
             pixels = grayScale(pixels);
         }
         if (uploadButton.contains(pressX, pressY)) {
-            BufferedImage imageIn = null;
-            try {
-                imageIn = ImageIO.read(searchFile());
-            } catch (IOException r) {
-                System.out.println(r);
-                System.exit(1);
-            }
-            pixels = makeColorArray(imageIn);
+            uploadDialogue();
         }
         if (saveAsButton.contains(pressX, pressY)) {
             saveAs();

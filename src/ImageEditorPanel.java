@@ -32,7 +32,7 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
     Rectangle saveAsButton;
     Rectangle exitButton;
     Rectangle contrastButton;
-    Color[][][] undoArr = new Color[0][0][0];
+    //Color[][][] undoArr = new Color[0][0][0];
 
     public ImageEditorPanel() {
 
@@ -125,6 +125,26 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
         return null;
 
     }
+    
+    public void saveAs() {
+        JFileChooser fileChooser = new JFileChooser();
+        FileNameExtensionFilter filter = new FileNameExtensionFilter("PNG Images", "png");
+        fileChooser.setFileFilter(filter);
+
+        int userSelection = fileChooser.showSaveDialog(null);
+
+        if (userSelection == JFileChooser.APPROVE_OPTION) {
+            File fileToSave = fileChooser.getSelectedFile();
+            try {
+                BufferedImage imageToSave = new BufferedImage(globalWidth, globalHeight, BufferedImage.TYPE_INT_ARGB);
+                Graphics g = imageToSave.getGraphics();
+                paintComponent(g);
+                ImageIO.write(imageToSave, "png", fileToSave);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
     // public void undoStore(Color[][] oldArr) {
     //     Color[][][] interArr = new Color[undoArr.length][oldArr.length][oldArr[0].length];
@@ -202,28 +222,30 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
     public Color[][] increaseContrast(Color[][] oldArr) {
         Color[][] newArr = new Color[oldArr.length][oldArr[0].length];
         double factor = 1.5;
+        final int HALF_VAL = 128;
+        final int FULL_VAL = 255;
         for (int r = 0; r < oldArr.length; r++) {
             for (int c = 0; c < oldArr[r].length; c++) {
-                int red = (int) (factor * (oldArr[r][c].getRed() - 128) + 128);
-                int green = (int) (factor * (oldArr[r][c].getGreen() - 128) + 128);
-                int blue = (int) (factor * (oldArr[r][c].getBlue() - 128) + 128);
+                int red = (int) (factor * (oldArr[r][c].getRed() - HALF_VAL) + HALF_VAL);
+                int green = (int) (factor * (oldArr[r][c].getGreen() - HALF_VAL) + HALF_VAL);
+                int blue = (int) (factor * (oldArr[r][c].getBlue() - HALF_VAL) + HALF_VAL);
 
                 if (red < 0) {
                     red = 0;
-                } else if (red > 255) {
-                    red = 255;
+                } else if (red > FULL_VAL) {
+                    red = FULL_VAL;
                 }
 
                 if (green < 0) {
                     green = 0;
-                } else if (green > 255) {
-                    green = 255;
+                } else if (green > FULL_VAL) {
+                    green = FULL_VAL;
                 }
 
                 if (blue < 0) {
                     blue = 0;
-                } else if (blue > 255) {
-                    blue = 255;
+                } else if (blue > FULL_VAL) {
+                    blue = FULL_VAL;
                 }
 
                 newArr[r][c] = new Color(red, green, blue);
@@ -368,6 +390,9 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
                 System.exit(1);
             }
             pixels = makeColorArray(imageIn);
+        }
+        if (saveAsButton.contains(pressX, pressY)) {
+            saveAs();
         }
         if (exitButton.contains(pressX, pressY)){
             System.exit(0);

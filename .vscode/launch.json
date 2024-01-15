@@ -6,6 +6,13 @@
     "configurations": [
         {
             "type": "java",
+            "name": "FrameRunner",
+            "request": "launch",
+            "mainClass": "FrameRunner",
+            "projectName": "imageEditor_69f6077f"
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"

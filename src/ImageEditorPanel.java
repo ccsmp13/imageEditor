@@ -40,8 +40,6 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
 
         BufferedImage imageIn = null;
         try {
-            // the image should be in the main project folder, not in \src or \bin
-            //imageIn = ImageIO.read(new File("CAT789D.jpg"));
             imageIn = ImageIO.read(searchFile());
         } catch (IOException e) {
             System.out.println(e);
@@ -56,7 +54,7 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
         setPreferredSize(new Dimension(globalWidth + SIDE_PANEL_WIDTH, globalHeight));
         addMouseListener(this);
         updateButtons();
-        undoStore(pixels);
+        // undoStore(pixels);
     }
 
     public void updateButtons() {
@@ -107,11 +105,9 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
 
     }
 
-    // call your image-processing methods here OR call them from keyboard event
-    // handling methods
     public void run() {
 
-        undoStore(pixels);
+        // undoStore(pixels);
         repaint();
 
     }
@@ -130,20 +126,20 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
 
     }
 
-    public void undoStore(Color[][] oldArr) {
-        Color[][][] interArr = new Color[undoArr.length][oldArr.length][oldArr[0].length];
+    // public void undoStore(Color[][] oldArr) {
+    //     Color[][][] interArr = new Color[undoArr.length][oldArr.length][oldArr[0].length];
         
-        for (int i = 0; i < undoArr.length; i++) {
-            interArr[i] = undoArr[i];
-        }
+    //     for (int i = 0; i < undoArr.length; i++) {
+    //         interArr[i] = undoArr[i];
+    //     }
 
-        undoArr = new Color[undoArr.length + 1][oldArr.length][oldArr[0].length];
-        for (int i = 0; i < interArr.length - 1; i++) {
-            undoArr[i] = interArr[i];
-        }
-        undoArr[undoArr.length - 1] = oldArr;
+    //     undoArr = new Color[undoArr.length + 1][oldArr.length][oldArr[0].length];
+    //     for (int i = 0; i < interArr.length - 1; i++) {
+    //         undoArr[i] = interArr[i];
+    //     }
+    //     undoArr[undoArr.length - 1] = oldArr;
 
-    }
+    // }
 
     public Color[][] grayScale(Color[][] oldArr) {
         Color[][] newArr = new Color[oldArr.length][oldArr[0].length];
@@ -171,6 +167,39 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
         setPreferredSize(new Dimension(globalWidth + 100, globalHeight));
         JFrame jf = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this);
         jf.pack();
+        return newArr;
+    }
+    
+    public Color[][] increaseContrast(Color[][] oldArr) {
+        Color[][] newArr = new Color[oldArr.length][oldArr[0].length];
+        double factor = 1.5;
+        for (int r = 0; r < oldArr.length; r++) {
+            for (int c = 0; c < oldArr[r].length; c++) {
+                int red = (int) (factor * (oldArr[r][c].getRed() - 128) + 128);
+                int green = (int) (factor * (oldArr[r][c].getGreen() - 128) + 128);
+                int blue = (int) (factor * (oldArr[r][c].getBlue() - 128) + 128);
+
+                if (red < 0) {
+                    red = 0;
+                } else if (red > 255) {
+                    red = 255;
+                }
+
+                if (green < 0) {
+                    green = 0;
+                } else if (green > 255) {
+                    green = 255;
+                }
+
+                if (blue < 0) {
+                    blue = 0;
+                } else if (blue > 255) {
+                    blue = 255;
+                }
+
+                newArr[r][c] = new Color(red, green, blue);
+            }
+        }
         return newArr;
     }
 
@@ -253,7 +282,6 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
                 result[row][col] = c;
             }
         }
-        // System.out.println("Loaded image: width: " +width + " height: " + height);
         return result;
     }
 
@@ -293,8 +321,11 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
         if (grayButton.contains(pressX, pressY)) {
             pixels = grayScale(pixels);
         }
+        if (contrastButton.contains(pressX, pressY)) {
+            pixels = increaseContrast(pixels);
+        }
         if (undoButton.contains(pressX, pressY)) {
-            pixels = undoDisplay();
+            //pixels = undoDisplay();
         }
         if (grayButton.contains(pressX, pressY)) {
             pixels = grayScale(pixels);
@@ -312,7 +343,7 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
         if (exitButton.contains(pressX, pressY)){
             System.exit(0);
         }
-        undoStore(pixels);
+        // undoStore(pixels);
         repaint();
     }
 

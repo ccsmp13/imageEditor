@@ -307,6 +307,7 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
                 System.out.println(r);
                 System.exit(1);
             }
+            pixels = makeColorArray(imageIn);
         }
         if (exitButton.contains(pressX, pressY)){
             System.exit(0);

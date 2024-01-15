@@ -8,8 +8,6 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-//import javafx.scene.input.KeyEvent;
-
 public class ImageEditorPanel extends JPanel implements MouseListener {
 
     Color[][] pixels;
@@ -71,9 +69,11 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
         exitButton = new Rectangle(boxStartX, boxStartY * 21, BOX_WIDTH, BOX_HEIGHT);
     }
 
-    public Color[][] undoDisplay() {
-        return undoArr[undoArr.length - 1];
-    }
+    // public Color[][] undoDisplay() {
+    //     return undoArr[undoArr.length - 1];
+    // }
+    
+    
 
     public void paintComponent(Graphics g) {
 
@@ -167,6 +167,35 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
         setPreferredSize(new Dimension(globalWidth + 100, globalHeight));
         JFrame jf = (JFrame) SwingUtilities.getAncestorOfClass(JFrame.class, this);
         jf.pack();
+        return newArr;
+    }
+    
+    public Color[][] blur(Color[][] oldArr) {
+        Color[][] newArr = new Color[oldArr.length][oldArr[0].length];
+        final int RADIUS = 3;
+
+        for (int r = RADIUS; r < oldArr.length - RADIUS; r++) {
+            for (int c = RADIUS; c < oldArr[r].length - RADIUS; c++) {
+                int totalRed = 0, totalGreen = 0, totalBlue = 0;
+
+                // Calculate average color values in a 5x5 square
+                for (int i = -RADIUS; i <= RADIUS; i++) {
+                    for (int j = -RADIUS; j <= RADIUS; j++) {
+                        totalRed += oldArr[r + i][c + j].getRed();
+                        totalGreen += oldArr[r + i][c + j].getGreen();
+                        totalBlue += oldArr[r + i][c + j].getBlue();
+                    }
+                }
+
+                // Set the pixel to the averaged color
+                int averageRed = totalRed / ((RADIUS + RADIUS + 1) * (RADIUS + RADIUS + 1));
+                int averageGreen = totalGreen / ((RADIUS + RADIUS + 1) * (RADIUS + RADIUS + 1));
+                int averageBlue = totalBlue / ((RADIUS + RADIUS + 1) * (RADIUS + RADIUS + 1));
+
+                newArr[r][c] = new Color(averageRed, averageGreen, averageBlue);
+            }
+        }
+
         return newArr;
     }
     
@@ -316,7 +345,7 @@ public class ImageEditorPanel extends JPanel implements MouseListener {
             pixels = posterize(pixels);
         }
         if (blurButton.contains(pressX, pressY)) {
-            pixels = rotateCCW(pixels);
+            pixels = blur(pixels);
         }
         if (grayButton.contains(pressX, pressY)) {
             pixels = grayScale(pixels);
